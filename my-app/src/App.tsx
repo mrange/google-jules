@@ -13,7 +13,7 @@ function App() {
   const [playheadPosition, setPlayheadPosition] = useState(0);
   const audioEngine = useRef<AudioEngine | null>(null);
   const waveformContainerRef = useRef<HTMLDivElement>(null);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number>(0);
 
   const updatePlayhead = useCallback(() => {
     if (audioEngine.current) {
