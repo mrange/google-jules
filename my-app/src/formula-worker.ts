@@ -51,7 +51,7 @@ self.onmessage = (event: MessageEvent) => {
         }
       }
       // Post the generated audio data back to the main thread
-      self.postMessage({ type: 'AUDIO_DATA', payload: { audioData, newTime: t } }, [audioData.buffer]);
+      (self as unknown as Worker).postMessage({ type: 'AUDIO_DATA', payload: { audioData, newTime: t } }, [audioData.buffer]);
     }
   }
 };

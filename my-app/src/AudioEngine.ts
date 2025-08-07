@@ -7,6 +7,7 @@ class AudioEngine {
   private isPlaying = false;
   private currentTime = 0;
   private listeners: AudioDataListener[] = [];
+  private audioQueue: Float32Array[] = [];
 
   private sampleRate = 44100;
   private bufferSize = 4096;
@@ -70,7 +71,25 @@ class AudioEngine {
   }
 
   private handleAudioProcess = (event: AudioProcessingEvent): void => {
-    // Request new audio data from the worker
+    const leftChannel = event.outputBuffer.getChannelData(0);
+    const rightChannel = event.outputBuffer.getChannelData(1);
+
+    if (this.audioQueue.length > 0) {
+      const audioData = this.audioQueue.shift()!;
+      for (let i = 0; i < this.bufferSize; i++) {
+        leftChannel[i] = audioData[i];
+        rightChannel[i] = audioData[i];
+      }
+      this.broadcastData(audioData);
+    } else {
+      // Play silence if the queue is empty
+      for (let i = 0; i < this.bufferSize; i++) {
+        leftChannel[i] = 0;
+        rightChannel[i] = 0;
+      }
+    }
+
+    // Always request more data from the worker
     this.worker?.postMessage({
       type: 'GET_AUDIO_DATA',
       payload: {
@@ -79,10 +98,6 @@ class AudioEngine {
         currentTime: this.currentTime,
       },
     });
-
-    // We will fill the buffer with the data received from the worker
-    // in the handleWorkerMessage method. For now, this might play a bit of silence
-    // on the first couple of buffer runs until the worker responds.
   };
 
   public addDataListener(listener: AudioDataListener): void {
@@ -107,18 +122,7 @@ class AudioEngine {
     const { type, payload } = event.data;
 
     if (type === 'AUDIO_DATA') {
-      if (this.isPlaying && this.scriptNode) {
-        this.scriptNode.onaudioprocess = (e) => {
-          const left = e.outputBuffer.getChannelData(0);
-          const right = e.outputBuffer.getChannelData(1);
-          for (let i = 0; i < payload.audioData.length; i++) {
-            left[i] = payload.audioData[i];
-            right[i] = payload.audioData[i];
-          }
-          // Broadcast the data for visualization
-          this.broadcastData(payload.audioData);
-        };
-      }
+      this.audioQueue.push(payload.audioData);
       this.currentTime = payload.newTime;
     } else if (type === 'FORMULA_OK') {
       if ((this as any).onFormulaOk) {
