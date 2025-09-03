@@ -1,0 +1,59 @@
+body {
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.controls {
+  flex-shrink: 0;
+  padding-bottom: 16px;
+}
+
+.editor-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #262626;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.waveform-container {
+  flex-shrink: 0;
+  height: 150px;
+  background-color: #262626;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+button {
+  background-color: #4f4f4f;
+  color: #f0f0f0;
+  border: 1px solid #666;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #666;
+}
+
+button:active {
+  background-color: #777;
+}
